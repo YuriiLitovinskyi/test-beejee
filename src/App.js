@@ -22,6 +22,7 @@ class App extends React.Component {
     this.loadData();
   }
 
+//GET
   loadData = (e) => {
     axios.get("https://uxcandy.com/~shapoval/test-task-backend/v2/?developer=Yuriy")
     .then((request) => {
@@ -37,6 +38,7 @@ class App extends React.Component {
     });
   }
 
+//POST
   addData = (e) => {
     e.preventDefault();     
     // axios.post("https://uxcandy.com/~shapoval/test-task-backend/v2/create?developer=Yuriy", {
@@ -44,9 +46,9 @@ class App extends React.Component {
     //   email: e.target[1].value,
     //   text: e.target[2].value
     // })
-    
-    let form = {
-      username: e.target[0].value,
+    //values from input fields
+    let form = {                
+      username: e.target[0].value, 
       email: e.target[1].value,
       text: e.target[2].value
     }
