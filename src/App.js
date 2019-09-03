@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
-
 import axios from "axios";
+import Modal from "./modal/modal";
 
 class App extends React.Component {
 
@@ -10,11 +10,16 @@ class App extends React.Component {
 
     this.state = {
       data: [],
-      tasks: []
+      tasks: [],
+      textToModal: "",
+      statusToModal: "",
+      requiredItem: 0,
+      id: 0
     }
 
     this.loadData = this.loadData.bind(this);
     this.addData = this.addData.bind(this);
+    this.replaceModalItem = this.replaceModalItem.bind(this);
   };
 
   
@@ -22,9 +27,28 @@ class App extends React.Component {
     this.loadData();
   }
 
+  replaceModalItem(index) {
+    this.setState({
+      requiredItem: index,
+      textToModal: this.state.tasks[index].text,
+      statusToModal: this.state.tasks[index].status,
+      id: this.state.tasks[index].id      
+    });
+    console.log(index);    
+    const i = this.state.requiredItem;
+    console.log(i);
+    console.log(this.state.tasks[i]);
+  }
+  
 //GET
   loadData = (e) => {
-    axios.get("https://uxcandy.com/~shapoval/test-task-backend/v2/?developer=Yuriy")
+    axios.get("https://uxcandy.com/~shapoval/test-task-backend/v2/?developer=Yurii", {
+      params: {
+        sort_field: "id",
+        sort_direction: "asc",
+        page: 1
+      }
+    })
     .then((request) => {
       console.log(request.data);
       console.log(request.data.message.tasks);
@@ -41,20 +65,15 @@ class App extends React.Component {
 //POST
   addData = (e) => {
     e.preventDefault();     
-    // axios.post("https://uxcandy.com/~shapoval/test-task-backend/v2/create?developer=Yuriy", {
-    //   username: e.target[0].value,
-    //   email: e.target[1].value,
-    //   text: e.target[2].value
-    // })
+    
     //values from input fields
-    let form = {                
-      username: e.target[0].value, 
-      email: e.target[1].value,
-      text: e.target[2].value
-    }
+    let form = new FormData();
+    form.append("username", e.target[0].value);
+    form.append("email", e.target[1].value);
+    form.append("text", e.target[2].value);    
 
     let authOptions = {
-      url: 'https://uxcandy.com/~shapoval/test-task-backend/v2/create?developer=Yuriy',
+      url: 'https://uxcandy.com/~shapoval/test-task-backend/v2/create?developer=Yurii',
       crossDomain: true,
       method: 'POST',
       mimeType: "multipart/form-data",
@@ -67,6 +86,34 @@ class App extends React.Component {
       }
     }
 
+    axios(authOptions)
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+  }
+
+  modifyData(item) {
+    //const requiredItem = this.state.requiredItem;
+    //console.log(requiredItem);
+    const id = this.state.id;
+
+    let form = new FormData();
+    form.append("text", item.text);
+    form.append("status", item.status);
+
+    let authOptions = {
+      url: 'https://uxcandy.com/~shapoval/test-task-backend/v2/create?developer=Yurii/edit/:' + id,
+      crossDomain: true,
+      method: 'POST',
+      mimeType: "multipart/form-data",
+      contentType: false,
+      processData: false,
+      data: form,
+      dataType: "json"
+    }
     axios(authOptions)
     .then((res) => {
       console.log(res);
@@ -97,7 +144,8 @@ render(){
                 <th scope="col">User Name</th>            
                 <th scope="col">E-Mail</th>
                 <th scope="col">Task Text</th>
-                <th scope="col">Task Status</th>            
+                <th scope="col">Task Status</th>
+                <th scope="col">Edit</th>            
               </tr>
             </thead>
             <tbody>
@@ -108,7 +156,12 @@ render(){
                     <td>{ item.username }</td>
                     <td>{ item.email }</td>
                     <td>{ item.text }</td>
-                    <td>{ item.status }</td>               
+                    <td>{ item.status }</td>
+                    <td><i onClick={() => this.replaceModalItem(index)}
+                          className="far fa-edit btnEdit" 
+                          data-toggle="modal" 
+                          data-target="#exampleModal">
+                   </i></td>               
                   </tr>
                   )
               })}
@@ -161,7 +214,13 @@ render(){
             </div>                     
         </form>
 
-        </div>      
+        </div>  
+
+        <Modal    
+            text={this.state.textToModal} 
+            status={this.state.statusToModal}             
+            modifyData={this.modifyData}          
+         />     
     </div>
   );
 }

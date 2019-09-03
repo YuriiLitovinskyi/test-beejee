@@ -11,6 +11,15 @@ h1 {
   margin: auto;  
 }
 
+.btnEdit {
+  color: green;
+  cursor: pointer;  
+}
+.btnEdit:hover {
+  font-size: 1.3em;
+  opacity: 0.8;
+  }
+
 
 
 
