@@ -13,24 +13,27 @@ class App extends React.Component {
       tasks: [],
       textToModal: "",
       statusToModal: "",
-	  usernameToModal: "",
-	  emailToModal: "",
+	    usernameToModal: "",
+	    emailToModal: "",
       requiredItem: 0,
       id: 0,
-	  loginUsername: "",
-	  loginPass: "",
-	  loggedIn: false
-    }
+  	  loginUsername: "",
+  	  loginPass: "",
+  	  loggedIn: false,
+      page: 1,
+      sort_field: "id",
+      sort_direction: "asc"
+      }
 
     this.loadData = this.loadData.bind(this);
     this.addData = this.addData.bind(this);
     this.replaceModalItem = this.replaceModalItem.bind(this);
-	this.modifyData = this.modifyData.bind(this);
-	this.handleUsername = this.handleUsername.bind(this);
-	this.handlePassword = this.handlePassword.bind(this);
-	this.handleSubmit = this.handleSubmit.bind(this);
-	this.loggingOut = this.loggingOut.bind(this);
-	this.loginToServer = this.loginToServer.bind(this);
+  	this.modifyData = this.modifyData.bind(this);
+  	this.handleUsername = this.handleUsername.bind(this);
+  	this.handlePassword = this.handlePassword.bind(this);
+  	this.handleSubmit = this.handleSubmit.bind(this);
+  	this.loggingOut = this.loggingOut.bind(this);
+  	this.loginToServer = this.loginToServer.bind(this);
   };
 
   
@@ -48,23 +51,23 @@ class App extends React.Component {
   
   handleSubmit = (e) => {
     e.preventDefault();
-	console.log(this.state.loginUsername);
-	console.log(this.state.loginPass);
-	this.setState({
+  	console.log(this.state.loginUsername);
+  	console.log(this.state.loginPass);
+  	this.setState({
       loggedIn: true
-	});
-	this.loginToServer();	
+  	});
+  	this.loginToServer();	
   }
   
   loggingOut = (e) => {
     //e.preventDefault();
-	this.setState({
+  	this.setState({
       loggedIn: false,
-	  loginUsername: "",
-	  loginPass: ""
-	});
-	console.log(this.state.loginUsername);
-	console.log(this.state.loginPass);
+  	  loginUsername: "",
+  	  loginPass: ""
+  	});
+  	console.log(this.state.loginUsername);
+  	console.log(this.state.loginPass);
   }
 	  
 
@@ -73,23 +76,24 @@ class App extends React.Component {
       requiredItem: index,
       textToModal: this.state.tasks[index].text,
       statusToModal: this.state.tasks[index].status,
-	  usernameToModal: this.state.tasks[index].username,
-	  emailToModal: this.state.tasks[index].email,
+	    usernameToModal: this.state.tasks[index].username,
+	    emailToModal: this.state.tasks[index].email,
       id: this.state.tasks[index].id      
     });
     console.log(index);    
     const i = this.state.requiredItem;
     console.log(i);
-    console.log(this.state.tasks[i]);    	
+    console.log(this.state.tasks[i]); 
+    console.log(this.state.id);   	
   }
   
 //GET
   loadData = (e) => {
     axios.get("https://uxcandy.com/~shapoval/test-task-backend/v2/?developer=Yurii", {
       params: {
-        sort_field: "id",
-        sort_direction: "asc",
-        page: 1
+        sort_field: this.state.sort_field,
+        sort_direction: this.state.sort_direction,
+        page: this.state.page
       }
     })
     .then((request) => {
@@ -141,16 +145,16 @@ class App extends React.Component {
   modifyData = (item) => {
     const requiredItem = this.state.requiredItem;
     console.log(requiredItem);
-    const id = this.state.id;
+    //const id = this.state.id;
 
     let form = new FormData();
-	form.append("username", item.username);
+  	form.append("username", item.username);
     form.append("email", item.email);
     form.append("text", item.text);
     form.append("status", item.status);
 
     let authOptions = {
-      url: 'https://uxcandy.com/~shapoval/test-task-backend/v2/create?developer=Yurii/edit/:' + id,
+      url: 'https://uxcandy.com/~shapoval/test-task-backend/v2/create?developer=Yurii/edit/:' + item.id,
       crossDomain: true,
       method: 'POST',
       mimeType: "multipart/form-data",
@@ -158,7 +162,7 @@ class App extends React.Component {
       processData: false,
       data: form,
       dataType: "json",
-	  success: function(data) {
+	    success: function(data) {
           console.log(data);
       }
     }
@@ -174,10 +178,10 @@ class App extends React.Component {
   
   loginToServer = (e) => {
     let form = new FormData();
-	form.append("username", this.state.loginUsername);
+  	form.append("username", this.state.loginUsername);
     form.append("password", this.state.loginPass);
-	form.append("email", "yurii@gmail.com");
-	form.append("text", "test text");
+	  form.append("email", "yurii@gmail.com");
+	  form.append("text", "test text");
 
     let authOptions = {
       url: 'https://uxcandy.com/~shapoval/test-task-backend/v2/create?developer=Yurii/login',
@@ -188,7 +192,7 @@ class App extends React.Component {
       processData: false,
       data: form,
       dataType: "json",
-	  success: function(data) {
+	    success: function(data) {
           console.log(data);
       }
     }
@@ -199,6 +203,78 @@ class App extends React.Component {
     .catch((err) => {
       console.log(err);
     })	  
+  }
+
+  prevPage() {
+    if (this.state.page > 1) {
+        this.setState({
+          page: this.state.page - 1
+    }, () => {
+      this.loadData();
+      console.log(this.state.page);
+    });     
+    }         
+  }
+
+  nextPage() {
+    if ((this.state.data.message.total_task_count/this.state.page) > 3) {
+      this.setState({
+        page: this.state.page + 1
+    }, () => {
+      this.loadData();
+      console.log(this.state.page);
+      console.log(this.state.data.message.total_task_count);
+    });
+    }        
+  }
+
+//Sort data from server
+  sortById() {
+    this.setState({
+      sort_field: "id"
+    }, () => {
+      this.loadData();
+    });
+  }
+
+  sortByUsername() {
+    this.setState({
+      sort_field: "username"
+    }, () => {
+      this.loadData();
+    });
+  }
+
+  sortByEmail() {
+    this.setState({
+      sort_field: "email"
+    }, () => {
+      this.loadData();
+    });
+  } 
+
+  sortByStatus() {
+    this.setState({
+      sort_field: "status"
+    }, () => {
+      this.loadData();
+    });
+  }
+
+  sortByDirectionAsc() {
+    this.setState({
+      sort_direction: "asc"
+    }, () => {
+      this.loadData();
+    });
+  }
+
+  sortByDirectionDesc() {
+    this.setState({
+      sort_direction: "desc"
+    }, () => {
+      this.loadData();
+    });
   }
 
 
@@ -218,44 +294,47 @@ render(){
 		
 		
 		  <form onSubmit={this.handleSubmit}>
-  <div className="form-row align-items-center">
-    <div className="col-auto">
-      <label className="sr-only" htmlFor="inlineFormInput">Login</label>
-      <input type="text" 
-	         className="form-control mb-2" 
-			 id="inlineFormInput" 
-			 placeholder="Login"
-			 required             
-             onChange={(e) => this.handleUsername(e)}
-             value={this.state.loginUsername}			 
-			 />
-    </div>
-    <div className="col-auto">
-      <label className="sr-only" htmlFor="inlineFormInputGroup">Password</label>
-      <div className="input-group mb-2">        
-        <input type="password" 
-		       className="form-control" 
-			   id="inlineFormInputGroup" 
-			   placeholder="Password"
-			   autoComplete="password" 
-			   required			  
-               onChange={(e) => this.handlePassword(e)}
-               value={this.state.loginPass}			   
-			   />
-      </div>
-    </div>
-    <div className="col-auto">     
-    </div>
-    <div className="col-auto">
-      <button type="submit" className="btn btn-primary mb-2" disabled={this.state.loggedIn ? true : false}>Login</button>
-    </div>
-  </div>
-</form>
-<button type="submit" 
-        className="btn btn-primary mb-2" 
-		onClick={(e) => this.loggingOut(e)}
-		disabled={!this.state.loggedIn ? true : false}
-		>Logout</button>
+        <div className="form-row align-items-center">
+          <div className="col-auto">
+            <label className="sr-only" htmlFor="inlineFormInput">Login</label>
+            <input type="text" 
+      	           className="form-control mb-2" 
+      			       id="inlineFormInput" 
+            			 placeholder="Login"
+            			 required             
+                   onChange={(e) => this.handleUsername(e)}
+                   value={this.state.loginUsername}			 
+      			 />
+          </div>
+          <div className="col-auto">
+            <label className="sr-only" htmlFor="inlineFormInputGroup">Password</label>
+            <div className="input-group mb-2">        
+              <input type="password" 
+          		       className="form-control" 
+            			   id="inlineFormInputGroup" 
+            			   placeholder="Password"
+            			   autoComplete="password" 
+            			   required			  
+                     onChange={(e) => this.handlePassword(e)}
+                     value={this.state.loginPass}			   
+      			   />
+            </div>
+          </div>
+          <div className="col-auto">     
+          </div>
+          <div className="col-auto">
+            <button type="submit" 
+                    className="btn btn-primary mb-2" 
+                    disabled={this.state.loggedIn ? true : false}
+                    >Login</button>
+          </div>
+        </div>
+      </form>
+      <button type="submit" 
+              className="btn btn-primary mb-2" 
+          		onClick={(e) => this.loggingOut(e)}
+          		disabled={!this.state.loggedIn ? true : false}
+          		>Logout</button>
 		
 		
 		
@@ -289,6 +368,25 @@ render(){
               })}
             </tbody>
           </table> 
+                    
+          <nav aria-label="Page navigation example">           
+            <button type="button" className="btn btn-light btn-sm" onClick={this.prevPage.bind(this)}>Previous</button>
+            <button type="button" className="btn btn-light btn-sm" disabled>{this.state.page}</button>
+            <button type="button" className="btn btn-light btn-sm" onClick={this.nextPage.bind(this)}>Next</button>
+          </nav>
+          <div className="dropdown">
+            <button className="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Sort by
+            </button>
+            <div className="dropdown-menu" aria-labelledby="dropdownMenu2">
+              <button className="dropdown-item btn-sm" type="button" onClick={this.sortById.bind(this)}>id</button>
+              <button className="dropdown-item btn-sm" type="button" onClick={this.sortByUsername.bind(this)}>username</button>
+              <button className="dropdown-item btn-sm" type="button" onClick={this.sortByEmail.bind(this)}>email</button>
+              <button className="dropdown-item btn-sm" type="button" onClick={this.sortByStatus.bind(this)}>status</button>
+              <button className="dropdown-item btn-sm" type="button" onClick={this.sortByDirectionAsc.bind(this)}>asc</button>
+              <button className="dropdown-item btn-sm" type="button" onClick={this.sortByDirectionDesc.bind(this)}>desc</button>
+            </div>
+          </div>
           <br />
 
           <form id="formId" className="form-group" onSubmit={this.addData}>
@@ -342,7 +440,8 @@ render(){
             text={this.state.textToModal} 
             status={this.state.statusToModal}  
             username={this.state.usernameToModal} 
-            email={this.state.emailToModal} 			
+            email={this.state.emailToModal} 
+            id={this.state.id}			
             modifyData={this.modifyData}          
          />     
     </div>

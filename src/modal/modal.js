@@ -9,7 +9,8 @@ class Modal extends React.Component {
 			text: "",
 			status: "",
 			username: "",
-			email: ""
+			email: "",
+			id: ""
 		}
 
 		this.handleSave = this.handleSave.bind(this);
@@ -22,7 +23,8 @@ class Modal extends React.Component {
 			text: nextProps.text,
 			status: nextProps.status,
 			username: nextProps.username,
-			email: nextProps.email
+			email: nextProps.email,
+			id: nextProps.id
 		})
 	}
 
