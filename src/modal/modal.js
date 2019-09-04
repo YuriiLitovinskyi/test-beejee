@@ -7,7 +7,9 @@ class Modal extends React.Component {
 
 		this.state = {
 			text: "",
-			status: ""
+			status: "",
+			username: "",
+			email: ""
 		}
 
 		this.handleSave = this.handleSave.bind(this);
@@ -18,7 +20,9 @@ class Modal extends React.Component {
 	UNSAFE_componentWillReceiveProps(nextProps) {
 		this.setState({
 			text: nextProps.text,
-			status: nextProps.status
+			status: nextProps.status,
+			username: nextProps.username,
+			email: nextProps.email
 		})
 	}
 
@@ -28,8 +32,8 @@ class Modal extends React.Component {
 
     statusHandler(e) {
         this.setState({ status: e.target.value });
-    }
-
+    }	
+	
     handleSave() {
     	const item = this.state;
     	console.log(item);
@@ -52,13 +56,14 @@ class Modal extends React.Component {
                                 <span className="modal-lable">Text: </span>
                                 <input type="text" 
                                     placeholder="text" 
+									maxLength="35"
                                     value={this.state.text} 
                                     onChange={(e) => this.textHandler(e)} />
                             </p>
                             <p>
                                 <span className="modal-lable">Status: </span>
                                 <input type="number" 
-                                    placeholder="status"
+                                    placeholder="0-10"
                                     min="0"
                                     max="10"                                      
                                     value={this.state.status} 

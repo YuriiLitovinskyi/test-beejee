@@ -13,31 +13,74 @@ class App extends React.Component {
       tasks: [],
       textToModal: "",
       statusToModal: "",
+	  usernameToModal: "",
+	  emailToModal: "",
       requiredItem: 0,
-      id: 0
+      id: 0,
+	  loginUsername: "",
+	  loginPass: "",
+	  loggedIn: false
     }
 
     this.loadData = this.loadData.bind(this);
     this.addData = this.addData.bind(this);
     this.replaceModalItem = this.replaceModalItem.bind(this);
+	this.modifyData = this.modifyData.bind(this);
+	this.handleUsername = this.handleUsername.bind(this);
+	this.handlePassword = this.handlePassword.bind(this);
+	this.handleSubmit = this.handleSubmit.bind(this);
+	this.loggingOut = this.loggingOut.bind(this);
+	this.loginToServer = this.loginToServer.bind(this);
   };
 
   
   componentDidMount(){
     this.loadData();
   }
+  
+  handleUsername = (e) => {   
+    this.setState({ loginUsername: e.target.value });   
+  }
+  
+  handlePassword = (e) => {   
+    this.setState({ loginPass: e.target.value });   
+  }
+  
+  handleSubmit = (e) => {
+    e.preventDefault();
+	console.log(this.state.loginUsername);
+	console.log(this.state.loginPass);
+	this.setState({
+      loggedIn: true
+	});
+	this.loginToServer();	
+  }
+  
+  loggingOut = (e) => {
+    //e.preventDefault();
+	this.setState({
+      loggedIn: false,
+	  loginUsername: "",
+	  loginPass: ""
+	});
+	console.log(this.state.loginUsername);
+	console.log(this.state.loginPass);
+  }
+	  
 
   replaceModalItem(index) {
     this.setState({
       requiredItem: index,
       textToModal: this.state.tasks[index].text,
       statusToModal: this.state.tasks[index].status,
+	  usernameToModal: this.state.tasks[index].username,
+	  emailToModal: this.state.tasks[index].email,
       id: this.state.tasks[index].id      
     });
     console.log(index);    
     const i = this.state.requiredItem;
     console.log(i);
-    console.log(this.state.tasks[i]);
+    console.log(this.state.tasks[i]);    	
   }
   
 //GET
@@ -95,12 +138,14 @@ class App extends React.Component {
     })
   }
 
-  modifyData(item) {
-    //const requiredItem = this.state.requiredItem;
-    //console.log(requiredItem);
+  modifyData = (item) => {
+    const requiredItem = this.state.requiredItem;
+    console.log(requiredItem);
     const id = this.state.id;
 
     let form = new FormData();
+	form.append("username", item.username);
+    form.append("email", item.email);
     form.append("text", item.text);
     form.append("status", item.status);
 
@@ -112,7 +157,40 @@ class App extends React.Component {
       contentType: false,
       processData: false,
       data: form,
-      dataType: "json"
+      dataType: "json",
+	  success: function(data) {
+          console.log(data);
+      }
+    }
+    axios(authOptions)
+    .then((res) => {
+      console.log(res);
+	  this.loadData();
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+  }
+  
+  loginToServer = (e) => {
+    let form = new FormData();
+	form.append("username", this.state.loginUsername);
+    form.append("password", this.state.loginPass);
+	form.append("email", "yurii@gmail.com");
+	form.append("text", "test text");
+
+    let authOptions = {
+      url: 'https://uxcandy.com/~shapoval/test-task-backend/v2/create?developer=Yurii/login',
+      crossDomain: true,
+      method: 'POST',
+      mimeType: "multipart/form-data",
+      contentType: false,
+      processData: false,
+      data: form,
+      dataType: "json",
+	  success: function(data) {
+          console.log(data);
+      }
     }
     axios(authOptions)
     .then((res) => {
@@ -120,7 +198,7 @@ class App extends React.Component {
     })
     .catch((err) => {
       console.log(err);
-    })
+    })	  
   }
 
 
@@ -136,7 +214,51 @@ render(){
       <h1>Task Application</h1>     
    
 
-        <div className="container">
+        <div className="container">		
+		
+		
+		  <form onSubmit={this.handleSubmit}>
+  <div className="form-row align-items-center">
+    <div className="col-auto">
+      <label className="sr-only" htmlFor="inlineFormInput">Login</label>
+      <input type="text" 
+	         className="form-control mb-2" 
+			 id="inlineFormInput" 
+			 placeholder="Login"
+			 required             
+             onChange={(e) => this.handleUsername(e)}
+             value={this.state.loginUsername}			 
+			 />
+    </div>
+    <div className="col-auto">
+      <label className="sr-only" htmlFor="inlineFormInputGroup">Password</label>
+      <div className="input-group mb-2">        
+        <input type="password" 
+		       className="form-control" 
+			   id="inlineFormInputGroup" 
+			   placeholder="Password"
+			   autoComplete="password" 
+			   required			  
+               onChange={(e) => this.handlePassword(e)}
+               value={this.state.loginPass}			   
+			   />
+      </div>
+    </div>
+    <div className="col-auto">     
+    </div>
+    <div className="col-auto">
+      <button type="submit" className="btn btn-primary mb-2" disabled={this.state.loggedIn ? true : false}>Login</button>
+    </div>
+  </div>
+</form>
+<button type="submit" 
+        className="btn btn-primary mb-2" 
+		onClick={(e) => this.loggingOut(e)}
+		disabled={!this.state.loggedIn ? true : false}
+		>Logout</button>
+		
+		
+		
           <table className="table table-striped">
             <thead className="thead-dark tableHead">
               <tr>
@@ -157,8 +279,8 @@ render(){
                     <td>{ item.email }</td>
                     <td>{ item.text }</td>
                     <td>{ item.status }</td>
-                    <td><i onClick={() => this.replaceModalItem(index)}
-                          className="far fa-edit btnEdit" 
+                    <td><i onClick={() => this.replaceModalItem(index)}					      
+                          className={this.state.loggedIn ? "far fa-edit btnEdit" : "far fa-edit btnEdit disabled" } 
                           data-toggle="modal" 
                           data-target="#exampleModal">
                    </i></td>               
@@ -218,7 +340,9 @@ render(){
 
         <Modal    
             text={this.state.textToModal} 
-            status={this.state.statusToModal}             
+            status={this.state.statusToModal}  
+            username={this.state.usernameToModal} 
+            email={this.state.emailToModal} 			
             modifyData={this.modifyData}          
          />     
     </div>
