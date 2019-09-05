@@ -286,58 +286,51 @@ render(){
 
   return (
     <div className="App">
-      <h1>Task Application</h1>     
-   
-
-        <div className="container">		
-		
-		<div className="loginForm">		
-		  <form onSubmit={this.handleSubmit}>
-        <div className="form-row align-items-center">
-          <div className="col-auto">
-            <label className="sr-only" htmlFor="inlineFormInput">Login</label>
-            <input type="text" 
-      	           className="form-control mb-2" 
-      			       id="inlineFormInput" 
-            			 placeholder="Login"
-            			 required             
-                   onChange={(e) => this.handleUsername(e)}
-                   value={this.state.loginUsername}			 
-      			 />
-          </div>
-          <div className="col-auto">
-            <label className="sr-only" htmlFor="inlineFormInputGroup">Password</label>
-            <div className="input-group mb-2">        
-              <input type="password" 
-          		       className="form-control" 
-            			   id="inlineFormInputGroup" 
-            			   placeholder="Password"
-            			   autoComplete="password" 
-            			   required			  
-                     onChange={(e) => this.handlePassword(e)}
-                     value={this.state.loginPass}			   
-      			   />
-            </div>
-          </div>
-          <div className="col-auto">     
-          </div>
-          <div className="col-auto">
-            <button type="submit" 
-                    className="btn btn-primary mb-2" 
-                    disabled={this.state.loggedIn ? true : false}
-                    >Login</button>
-			<button className="btn btn-primary mb-2 logout" 
-          		    onClick={(e) => this.loggingOut(e)}
-          		    disabled={!this.state.loggedIn ? true : false}
-          		    >Logout</button>
-          </div>
-        </div>
-      </form>
-	  </div>
-      
-		
-		
-		
+      <h1>Task Application</h1> 
+        <div className="container">				
+      		<div className="loginForm">		
+      		  <form onSubmit={this.handleSubmit}>
+              <div className="form-row align-items-center">
+                <div className="col-auto">
+                  <label className="sr-only" htmlFor="inlineFormInput">Login</label>
+                  <input type="text" 
+            	           className="form-control mb-2" 
+            			       id="inlineFormInput" 
+                  			 placeholder="Login"
+                  			 required             
+                         onChange={(e) => this.handleUsername(e)}
+                         value={this.state.loginUsername}			 
+            			 />
+                </div>
+                <div className="col-auto">
+                  <label className="sr-only" htmlFor="inlineFormInputGroup">Password</label>
+                  <div className="input-group mb-2">        
+                    <input type="password" 
+                		       className="form-control" 
+                  			   id="inlineFormInputGroup" 
+                  			   placeholder="Password"
+                  			   autoComplete="password" 
+                  			   required			  
+                           onChange={(e) => this.handlePassword(e)}
+                           value={this.state.loginPass}			   
+            			   />
+                  </div>
+                </div>
+                <div className="col-auto">     
+                </div>
+                <div className="col-auto">
+                  <button type="submit" 
+                          className="btn btn-primary mb-2" 
+                          disabled={this.state.loggedIn ? true : false}
+                          >Login</button>
+      			<button className="btn btn-primary mb-2 logout" 
+                		    onClick={(e) => this.loggingOut(e)}
+                		    disabled={!this.state.loggedIn ? true : false}
+                		    >Logout</button>
+                </div>
+              </div>
+            </form>
+      	  </div>   
           <table className="table table-striped">
             <thead className="thead-dark tableHead">
               <tr>
