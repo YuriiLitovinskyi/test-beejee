@@ -3,12 +3,13 @@
 }
 
 h1 {
-  margin: 70px 0px 50px !important;
+  margin: 50px 0px 50px !important;
 }
 
 .form-group {
   width: 80%;
-  margin: auto;  
+  margin: auto; 
+  margin-top: 20px;   
 }
 
 .btnEdit {
@@ -25,7 +26,18 @@ h1 {
 }
 
 .btn-light {
-	margin: 1px;
+  margin: 1px;
+}
+
+.logout {
+  margin-left: 4px;
+}
+
+.loginForm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
 }
 
 

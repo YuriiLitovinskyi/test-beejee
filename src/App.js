@@ -55,8 +55,7 @@ class App extends React.Component {
   	console.log(this.state.loginPass);
   	this.setState({
       loggedIn: true
-  	});
-  	this.loginToServer();	
+  	}, () => this.loginToServer());  		
   }
   
   loggingOut = (e) => {
@@ -292,7 +291,7 @@ render(){
 
         <div className="container">		
 		
-		
+		<div className="loginForm">		
 		  <form onSubmit={this.handleSubmit}>
         <div className="form-row align-items-center">
           <div className="col-auto">
@@ -327,14 +326,15 @@ render(){
                     className="btn btn-primary mb-2" 
                     disabled={this.state.loggedIn ? true : false}
                     >Login</button>
+			<button className="btn btn-primary mb-2 logout" 
+          		    onClick={(e) => this.loggingOut(e)}
+          		    disabled={!this.state.loggedIn ? true : false}
+          		    >Logout</button>
           </div>
         </div>
       </form>
-      <button type="submit" 
-              className="btn btn-primary mb-2" 
-          		onClick={(e) => this.loggingOut(e)}
-          		disabled={!this.state.loggedIn ? true : false}
-          		>Logout</button>
+	  </div>
+      
 		
 		
 		
@@ -370,7 +370,7 @@ render(){
           </table> 
                     
           <nav aria-label="Page navigation example">           
-            <button type="button" className="btn btn-light btn-sm" onClick={this.prevPage.bind(this)}>Previous</button>
+            <button type="button" className="btn btn-light btn-sm" onClick={this.prevPage.bind(this)}>Prev</button>
             <button type="button" className="btn btn-light btn-sm" disabled>{this.state.page}</button>
             <button type="button" className="btn btn-light btn-sm" onClick={this.nextPage.bind(this)}>Next</button>
           </nav>
