@@ -22,7 +22,11 @@ class App extends React.Component {
   	  loggedIn: false,
       page: 1,
       sort_field: "id",
-      sort_direction: "asc"
+      sort_direction: "asc",
+	  token: "",
+	  userNamePost: "",
+	  emailPost: "",
+	  textPost: ""
       }
 
     this.loadData = this.loadData.bind(this);
@@ -34,6 +38,9 @@ class App extends React.Component {
   	this.handleSubmit = this.handleSubmit.bind(this);
   	this.loggingOut = this.loggingOut.bind(this);
   	this.loginToServer = this.loginToServer.bind(this);
+	this.handleUsernamePost = this.handleUsernamePost.bind(this);
+	this.handleEmailPost = this.handleEmailPost.bind(this);
+	this.handleTextPost = this.handleTextPost.bind(this);
   };
 
   
@@ -47,6 +54,18 @@ class App extends React.Component {
   
   handlePassword = (e) => {   
     this.setState({ loginPass: e.target.value });   
+  }
+  
+  handleUsernamePost = (e) => {   
+    this.setState({ userNamePost: e.target.value });   
+  }
+  
+  handleEmailPost = (e) => {   
+    this.setState({ emailPost: e.target.value });   
+  }
+  
+  handleTextPost = (e) => {   
+    this.setState({ textPost: e.target.value });   
   }
   
   handleSubmit = (e) => {
@@ -135,6 +154,14 @@ class App extends React.Component {
     axios(authOptions)
     .then((res) => {
       console.log(res);
+	  this.setState({
+		userNamePost: "",
+	    emailPost: "",
+	    textPost: ""
+	  }, () => {
+		  this.loadData();
+		  alert("New Task was added successfully!");
+	  });
     })
     .catch((err) => {
       console.log(err);
@@ -151,9 +178,10 @@ class App extends React.Component {
     form.append("email", item.email);
     form.append("text", item.text);
     form.append("status", item.status);
+	form.append("token", this.state.token);
 
     let authOptions = {
-      url: 'https://uxcandy.com/~shapoval/test-task-backend/v2/create?developer=Yurii/edit/:' + item.id,
+      url: 'https://uxcandy.com/~shapoval/test-task-backend/v2/edit/' + item.id + '?developer=Yurii',  
       crossDomain: true,
       method: 'POST',
       mimeType: "multipart/form-data",
@@ -183,7 +211,7 @@ class App extends React.Component {
 	  form.append("text", "test text");
 
     let authOptions = {
-      url: 'https://uxcandy.com/~shapoval/test-task-backend/v2/create?developer=Yurii/login',
+      url: 'https://uxcandy.com/~shapoval/test-task-backend/v2/login?developer=Yurii',
       crossDomain: true,
       method: 'POST',
       mimeType: "multipart/form-data",
@@ -198,6 +226,11 @@ class App extends React.Component {
     axios(authOptions)
     .then((res) => {
       console.log(res);
+	  this.setState({
+		  token: res.data.message.token
+	  }, () => {
+		  console.log(this.state.token);
+	  });
     })
     .catch((err) => {
       console.log(err);
@@ -277,13 +310,7 @@ class App extends React.Component {
   }
 
 
-render(){
-
-  // let tasks = Object.values(this.state.tasks);
-  // let taskKey = Object.keys(this.state.tasks);
-  // console.log(tasks);
-  // console.log(taskKey); 
-
+render(){ 
   return (
     <div className="App">
       <h1>Task Application</h1> 
@@ -390,7 +417,9 @@ render(){
                     type="text" 
                     className="form-control"                      
                     placeholder="username" 
-                    required 
+                    required
+                    onChange={(e) => this.handleUsernamePost(e)}	
+                    value={this.state.userNamePost} 					
                     />
                 </div>
             </div>
@@ -402,6 +431,8 @@ render(){
                     className="form-control"                      
                     placeholder="email" 
                     required 
+					onChange={(e) => this.handleEmailPost(e)}	
+                    value={this.state.emailPost} 
                     />
                 </div>
             </div>
@@ -413,6 +444,8 @@ render(){
                     className="form-control"                      
                     placeholder="text" 
                     required 
+					onChange={(e) => this.handleTextPost(e)}	
+                    value={this.state.textPost} 
                     />
                 </div>
             </div>            
@@ -440,7 +473,6 @@ render(){
     </div>
   );
 }
-}
-  
+}  
 
 export default App;
