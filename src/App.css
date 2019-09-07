@@ -44,7 +44,39 @@ h1 {
   margin-top: 5px;
 }
 
+.openTask {
+  color: red;
+}
 
+.doneTask {
+  color: green;
+}
+
+.paginBtn {
+	font-weight: bold !important;
+	color: #7d7d7d !important;
+}
+
+.tooltiptext {
+  visibility: hidden;
+  width: 200px;
+  background-color: #616161;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 3px 0;  
+  position: absolute;  
+}
+
+.tooltipLogged {
+	visibility: hidden;
+	position: absolute; 
+}
+
+td:hover .tooltiptext {
+  visibility: visible;
+  transition-delay: 0.5s;  
+}
 
 
 

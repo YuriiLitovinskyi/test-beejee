@@ -33,7 +33,7 @@ class Modal extends React.Component {
     }
 
     statusHandler(e) {
-        this.setState({ status: e.target.value });
+        this.setState({ status: +e.target.value });   // '+'' converts string to number
     }	
 	
     handleSave() {
@@ -56,27 +56,39 @@ class Modal extends React.Component {
                         <div className="modal-body">
                             <p>
                                 <span className="modal-lable">Text: </span>
-                                <input type="text" 
-                                    placeholder="text" 
-									maxLength="35"
-                                    value={this.state.text} 
-                                    onChange={(e) => this.textHandler(e)} />
-                            </p>
-                            <p>
-                                <span className="modal-lable">Status: </span>
-                                <input type="number" 
-                                    placeholder="0-10"
-                                    min="0"
-                                    max="10"                                      
-                                    value={this.state.status} 
-                                    onChange={(e) => this.statusHandler(e)}  />
+                                <input type="text"
+                                       className="inputText" 
+                                       placeholder="text" 
+									   maxLength="35"
+                                       value={this.state.text} 
+                                       onChange={(e) => this.textHandler(e)} />
                             </p>                            
+                            <div className="form-check form-check-inline">
+                              <label className="form-check-label" htmlFor="inlineRadio1">Open</label>
+							  <input className="form-check-input" 
+							         type="radio"
+							         name="inlineRadioOptions" 
+							         id="inlineRadio1" 
+							         value={0}
+							         checked={this.state.status === 0 ? true : false}
+							         onChange={(e) => this.statusHandler(e)} />							  
+							</div>
+							<div className="form-check form-check-inline">
+							  <label className="form-check-label" htmlFor="inlineRadio2">Done</label>
+							  <input className="form-check-input" 
+							         type="radio" 
+							         name="inlineRadioOptions" 
+							         id="inlineRadio2" 
+							         value={10}
+							         checked={this.state.status === 10 ? true : false}
+							         onChange={(e) => this.statusHandler(e)} />							  
+							</div>                            
                         </div>
                         <div className="modal-footer">
                             <button 
                                 type="button" 
                                 className="btn btn-secondary" 
-                                data-dismiss="modal">Close
+                                data-dismiss="modal">Cancel
                             </button>
                             <button 
                                 type="button" 

@@ -15,8 +15,15 @@
 
 input {
 	background-color: #f5f5f5;	
-	color: #4e4e4e;
-    width: 300px;	
+	color: #4e4e4e;    	
+}
+
+.inputText {
+	width: 300px;
+}
+
+#inlineRadio1, #inlineRadio2 {
+	margin-left: 3px;
 }
 
 

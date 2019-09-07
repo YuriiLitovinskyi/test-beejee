@@ -14,8 +14,7 @@ class App extends React.Component {
       textToModal: "",
       statusToModal: "",
 	    usernameToModal: "",
-	    emailToModal: "",
-      requiredItem: 0,
+	    emailToModal: "",      
       id: 0,
   	  loginUsername: "",
   	  loginPass: "",
@@ -23,10 +22,17 @@ class App extends React.Component {
       page: 1,
       sort_field: "id",
       sort_direction: "asc",
-	  token: "",
-	  userNamePost: "",
-	  emailPost: "",
-	  textPost: ""
+	    token: "",
+	    userNamePost: "",
+	    emailPost: "",
+	    textPost: "",
+      postStatus: "",
+      loginStatus: "",
+      loginMessageUsername: "",
+      loginMessagePass: "",
+      postMessageUsername: "",
+      postMessageEmail: "",
+      postMessageText: ""
       }
 
     this.loadData = this.loadData.bind(this);
@@ -38,9 +44,9 @@ class App extends React.Component {
   	this.handleSubmit = this.handleSubmit.bind(this);
   	this.loggingOut = this.loggingOut.bind(this);
   	this.loginToServer = this.loginToServer.bind(this);
-	this.handleUsernamePost = this.handleUsernamePost.bind(this);
-	this.handleEmailPost = this.handleEmailPost.bind(this);
-	this.handleTextPost = this.handleTextPost.bind(this);
+	  this.handleUsernamePost = this.handleUsernamePost.bind(this);
+  	this.handleEmailPost = this.handleEmailPost.bind(this);
+	  this.handleTextPost = this.handleTextPost.bind(this);
   };
 
   
@@ -77,8 +83,7 @@ class App extends React.Component {
   	}, () => this.loginToServer());  		
   }
   
-  loggingOut = (e) => {
-    //e.preventDefault();
+  loggingOut = (e) => {    
   	this.setState({
       loggedIn: false,
   	  loginUsername: "",
@@ -90,19 +95,13 @@ class App extends React.Component {
 	  
 
   replaceModalItem(index) {
-    this.setState({
-      requiredItem: index,
+    this.setState({      
       textToModal: this.state.tasks[index].text,
       statusToModal: this.state.tasks[index].status,
 	    usernameToModal: this.state.tasks[index].username,
 	    emailToModal: this.state.tasks[index].email,
       id: this.state.tasks[index].id      
-    });
-    console.log(index);    
-    const i = this.state.requiredItem;
-    console.log(i);
-    console.log(this.state.tasks[i]); 
-    console.log(this.state.id);   	
+    });     	
   }
   
 //GET
@@ -117,6 +116,7 @@ class App extends React.Component {
     .then((request) => {
       console.log(request.data);
       console.log(request.data.message.tasks);
+      console.log(this.state.loggedIn);
       this.setState({
         data: request.data,
         tasks: request.data.message.tasks
@@ -150,17 +150,25 @@ class App extends React.Component {
           console.log(data);
       }
     }
-
     axios(authOptions)
     .then((res) => {
       console.log(res);
-	  this.setState({
-		userNamePost: "",
-	    emailPost: "",
-	    textPost: ""
+  	  this.setState({
+  		  userNamePost: "",
+  	    emailPost: "",
+  	    textPost: "",
+        postStatus: res.data.status,
+        postMessageUsername: res.data.message.username,
+        postMessageEmail: res.data.message.email,
+        postMessageText: res.data.message.text
 	  }, () => {
+      console.log(this.state.postStatus);
 		  this.loadData();
-		  alert("New Task was added successfully!");
+      if (this.state.postStatus === "ok") {
+        alert("New Task was added successfully!");
+      } else {
+        alert(`Error! New Task wasn't added!\nServer response:\nusername: ${this.state.postMessageUsername}\nemail: ${this.state.postMessageEmail}\ntext: ${this.state.postMessageText}`);
+      }		  
 	  });
     })
     .catch((err) => {
@@ -168,17 +176,14 @@ class App extends React.Component {
     })
   }
 
-  modifyData = (item) => {
-    const requiredItem = this.state.requiredItem;
-    console.log(requiredItem);
-    //const id = this.state.id;
+  modifyData = (item) => {  
 
     let form = new FormData();
   	form.append("username", item.username);
     form.append("email", item.email);
     form.append("text", item.text);
     form.append("status", item.status);
-	form.append("token", this.state.token);
+	  form.append("token", this.state.token);
 
     let authOptions = {
       url: 'https://uxcandy.com/~shapoval/test-task-backend/v2/edit/' + item.id + '?developer=Yurii',  
@@ -202,7 +207,8 @@ class App extends React.Component {
       console.log(err);
     })
   }
-  
+
+  //Login  
   loginToServer = (e) => {
     let form = new FormData();
   	form.append("username", this.state.loginUsername);
@@ -226,25 +232,35 @@ class App extends React.Component {
     axios(authOptions)
     .then((res) => {
       console.log(res);
-	  this.setState({
-		  token: res.data.message.token
-	  }, () => {
-		  console.log(this.state.token);
-	  });
+  	  this.setState({
+  		  token: res.data.message.token,
+        loginStatus: res.data.status,
+        loginMessagePass: res.data.message.password,
+        loginMessageUsername: res.data.message.username
+  	  }, () => {
+  		  console.log(this.state.token);
+        if (this.state.loginStatus !== "ok") {
+          alert("Registration error!\nServer response:\nusername: " + this.state.loginMessageUsername + `\npassword: ${this.state.loginMessagePass}`);
+          this.setState({
+            loggedIn: false
+          });
+        }
+  	  });
     })
     .catch((err) => {
       console.log(err);
     })	  
   }
 
+  //Pagination
   prevPage() {
     if (this.state.page > 1) {
         this.setState({
           page: this.state.page - 1
-    }, () => {
-      this.loadData();
-      console.log(this.state.page);
-    });     
+        }, () => {
+          this.loadData();
+          console.log(this.state.page);
+    });      
     }         
   }
 
@@ -252,10 +268,10 @@ class App extends React.Component {
     if ((this.state.data.message.total_task_count/this.state.page) > 3) {
       this.setState({
         page: this.state.page + 1
-    }, () => {
-      this.loadData();
-      console.log(this.state.page);
-      console.log(this.state.data.message.total_task_count);
+      }, () => {
+        this.loadData();
+        console.log(this.state.page);
+        console.log(this.state.data.message.total_task_count);
     });
     }        
   }
@@ -323,8 +339,7 @@ render(){
                   <input type="text" 
             	           className="form-control mb-2" 
             			       id="inlineFormInput" 
-                  			 placeholder="Login"
-                  			 required             
+                  			 placeholder="Login"                  			             
                          onChange={(e) => this.handleUsername(e)}
                          value={this.state.loginUsername}			 
             			 />
@@ -336,8 +351,7 @@ render(){
                 		       className="form-control" 
                   			   id="inlineFormInputGroup" 
                   			   placeholder="Password"
-                  			   autoComplete="password" 
-                  			   required			  
+                  			   autoComplete="password"                  			   			  
                            onChange={(e) => this.handlePassword(e)}
                            value={this.state.loginPass}			   
             			   />
@@ -377,12 +391,13 @@ render(){
                     <td>{ item.username }</td>
                     <td>{ item.email }</td>
                     <td>{ item.text }</td>
-                    <td>{ item.status }</td>
+                    <td className={item.status === 0 ? "openTask" : "doneTask"}>{ item.status === 0 ? "open" : "done (edited)" }</td>
                     <td><i onClick={() => this.replaceModalItem(index)}					      
                           className={this.state.loggedIn ? "far fa-edit btnEdit" : "far fa-edit btnEdit disabled" } 
                           data-toggle="modal" 
                           data-target="#exampleModal">
-                   </i></td>               
+                   </i><span className={this.state.loggedIn ? "tooltipLogged" : "tooltiptext"}>You need to be logged in!</span>
+                    </td>               
                   </tr>
                   )
               })}
@@ -390,9 +405,9 @@ render(){
           </table> 
                     
           <nav aria-label="Page navigation example">           
-            <button type="button" className="btn btn-light btn-sm" onClick={this.prevPage.bind(this)}>Prev</button>
-            <button type="button" className="btn btn-light btn-sm" disabled>{this.state.page}</button>
-            <button type="button" className="btn btn-light btn-sm" onClick={this.nextPage.bind(this)}>Next</button>
+            <button type="button" className="btn btn-light btn-sm paginBtn" onClick={this.prevPage.bind(this)}>Prev</button>
+            <button type="button" className="btn btn-light btn-sm paginBtn" disabled>{this.state.page}</button>
+            <button type="button" className="btn btn-light btn-sm paginBtn" onClick={this.nextPage.bind(this)}>Next</button>
           </nav>
           <div className="dropdown">
             <button className="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -416,8 +431,7 @@ render(){
                   <input                      
                     type="text" 
                     className="form-control"                      
-                    placeholder="username" 
-                    required
+                    placeholder="username"                     
                     onChange={(e) => this.handleUsernamePost(e)}	
                     value={this.state.userNamePost} 					
                     />
@@ -429,9 +443,8 @@ render(){
                   <input                       
                     type="email" 
                     className="form-control"                      
-                    placeholder="email" 
-                    required 
-					onChange={(e) => this.handleEmailPost(e)}	
+                    placeholder="email"                      
+					          onChange={(e) => this.handleEmailPost(e)}	
                     value={this.state.emailPost} 
                     />
                 </div>
@@ -442,9 +455,8 @@ render(){
                   <input                      
                     type="text" 
                     className="form-control"                      
-                    placeholder="text" 
-                    required 
-					onChange={(e) => this.handleTextPost(e)}	
+                    placeholder="text"                      
+					          onChange={(e) => this.handleTextPost(e)}	
                     value={this.state.textPost} 
                     />
                 </div>
