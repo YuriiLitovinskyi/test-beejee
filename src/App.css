@@ -79,6 +79,10 @@ td:hover .tooltiptext {
   transition-delay: 0.5s;  
 }
 
+.btn-front {
+	margin-bottom: 20px !important;
+}
+
 
 
 
