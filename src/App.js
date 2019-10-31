@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import './App.css';
 import axios from "axios";
 import Modal from "./modal/modal";
@@ -240,10 +241,19 @@ class App extends React.Component {
   	  }, () => {
   		  console.log(this.state.token);
         if (this.state.loginStatus !== "ok") {
-          alert("Registration error!\nServer response:\nusername: " + this.state.loginMessageUsername + `\npassword: ${this.state.loginMessagePass}`);
+          //alert("Registration error!\nServer response:\nusername: " + this.state.loginMessageUsername + `\npassword: ${this.state.loginMessagePass}`);
+          ReactDOM.render(<p className="errorParagraph">Registration error!<br /> Server response:<br /> username: { this.state.loginMessageUsername }<br /> password: { this.state.loginMessagePass }</p>, document.getElementById('alert1'));
+            setTimeout( () => {
+                ReactDOM.unmountComponentAtNode(document.getElementById('alert1'));
+            }, 3000);
           this.setState({
             loggedIn: false
           });
+        } else {
+          ReactDOM.render(<p className="successParagraph">Registration was succesfull!</p>, document.getElementById('alert1'));
+            setTimeout( () => {
+                ReactDOM.unmountComponentAtNode(document.getElementById('alert1'));
+            }, 3000);
         }
   	  });
     })
@@ -364,14 +374,17 @@ render(){
                           className="btn btn-primary mb-2" 
                           disabled={this.state.loggedIn ? true : false}
                           >Login</button>
-      			<button className="btn btn-primary mb-2 logout" 
+      			      <button className="btn btn-primary mb-2 logout" 
                 		    onClick={(e) => this.loggingOut(e)}
                 		    disabled={!this.state.loggedIn ? true : false}
                 		    >Logout</button>
                 </div>
               </div>
-            </form>
-      	  </div>   
+            </form>            
+      	  </div>  
+
+          <div className="alerts" id="alert1" ref="divRef"></div> 
+
           <table className="table table-striped">
             <thead className="thead-dark tableHead">
               <tr>

@@ -83,6 +83,19 @@ td:hover .tooltiptext {
 	margin-bottom: 20px !important;
 }
 
+.alerts {
+  margin: 0px;
+  padding: 0px;
+}
+
+.errorParagraph {
+  color: red;
+}
+
+
+.successParagraph {
+  color: green;
+}
 
 
 
