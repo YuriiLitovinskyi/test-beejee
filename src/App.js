@@ -77,8 +77,8 @@ class App extends React.Component {
   
   handleSubmit = (e) => {
     e.preventDefault();
-  	console.log(this.state.loginUsername);
-  	console.log(this.state.loginPass);
+  	//console.log(this.state.loginUsername);
+  	//console.log(this.state.loginPass);
   	this.setState({
       loggedIn: true
   	}, () => this.loginToServer());  		
@@ -90,8 +90,8 @@ class App extends React.Component {
   	  loginUsername: "",
   	  loginPass: ""
   	});
-  	console.log(this.state.loginUsername);
-  	console.log(this.state.loginPass);
+  	//console.log(this.state.loginUsername);
+  	//console.log(this.state.loginPass);
   }
 	  
 
@@ -115,9 +115,9 @@ class App extends React.Component {
       }
     })
     .then((request) => {
-      console.log(request.data);
-      console.log(request.data.message.tasks);
-      console.log(this.state.loggedIn);
+      //console.log(request.data);
+      //console.log(request.data.message.tasks);
+      //console.log(this.state.loggedIn);
       this.setState({
         data: request.data,
         tasks: request.data.message.tasks
@@ -153,7 +153,7 @@ class App extends React.Component {
     }
     axios(authOptions)
     .then((res) => {
-      console.log(res);
+      //console.log(res);
   	  this.setState({
   		  userNamePost: "",
   	    emailPost: "",
@@ -163,12 +163,20 @@ class App extends React.Component {
         postMessageEmail: res.data.message.email,
         postMessageText: res.data.message.text
 	  }, () => {
-      console.log(this.state.postStatus);
+      //console.log(this.state.postStatus);
 		  this.loadData();
       if (this.state.postStatus === "ok") {
-        alert("New Task was added successfully!");
+        //alert("New Task was added successfully!");
+        ReactDOM.render(<p className="successParagraph"><strong>New Task was added successfully!</strong></p>, document.getElementById('alert2'));
+            setTimeout( () => {
+                ReactDOM.unmountComponentAtNode(document.getElementById('alert2'));
+            }, 5000);
       } else {
-        alert(`Error! New Task wasn't added!\nServer response:\nusername: ${this.state.postMessageUsername}\nemail: ${this.state.postMessageEmail}\ntext: ${this.state.postMessageText}`);
+        //alert(`Error! New Task wasn't added!\nServer response:\nusername: ${this.state.postMessageUsername}\nemail: ${this.state.postMessageEmail}\ntext: ${this.state.postMessageText}`);
+        ReactDOM.render(<p className="errorParagraph"><strong>Error! New Task wasn't added! Server response:</strong><br /> username: { this.state.postMessageUsername }<br /> email: { this.state.postMessageEmail }<br /> text: { this.state.postMessageText }</p>, document.getElementById('alert2'));
+            setTimeout( () => {
+                ReactDOM.unmountComponentAtNode(document.getElementById('alert2'));
+            }, 5000);
       }		  
 	  });
     })
@@ -201,8 +209,12 @@ class App extends React.Component {
     }
     axios(authOptions)
     .then((res) => {
-      console.log(res);
-	  this.loadData();
+      //console.log(res);
+	    this.loadData();
+      ReactDOM.render(<p className="successParagraph"><strong>Task was successfully modified!</strong></p>, document.getElementById('alert1'));
+            setTimeout( () => {
+                ReactDOM.unmountComponentAtNode(document.getElementById('alert1'));
+            }, 5000);
     })
     .catch((err) => {
       console.log(err);
@@ -232,28 +244,28 @@ class App extends React.Component {
     }
     axios(authOptions)
     .then((res) => {
-      console.log(res);
+      //console.log(res);
   	  this.setState({
   		  token: res.data.message.token,
         loginStatus: res.data.status,
         loginMessagePass: res.data.message.password,
         loginMessageUsername: res.data.message.username
   	  }, () => {
-  		  console.log(this.state.token);
+  		  //console.log(this.state.token);
         if (this.state.loginStatus !== "ok") {
           //alert("Registration error!\nServer response:\nusername: " + this.state.loginMessageUsername + `\npassword: ${this.state.loginMessagePass}`);
-          ReactDOM.render(<p className="errorParagraph">Registration error!<br /> Server response:<br /> username: { this.state.loginMessageUsername }<br /> password: { this.state.loginMessagePass }</p>, document.getElementById('alert1'));
+          ReactDOM.render(<p className="errorParagraph"><strong>Registration error! Server response:</strong><br /> username: { this.state.loginMessageUsername }<br /> password: { this.state.loginMessagePass }</p>, document.getElementById('alert1'));
             setTimeout( () => {
                 ReactDOM.unmountComponentAtNode(document.getElementById('alert1'));
-            }, 3000);
+            }, 5000);
           this.setState({
             loggedIn: false
           });
         } else {
-          ReactDOM.render(<p className="successParagraph">Registration was succesfull!</p>, document.getElementById('alert1'));
+          ReactDOM.render(<p className="successParagraph"><strong>Registration was succesfull!</strong></p>, document.getElementById('alert1'));
             setTimeout( () => {
                 ReactDOM.unmountComponentAtNode(document.getElementById('alert1'));
-            }, 3000);
+            }, 5000);
         }
   	  });
     })
@@ -269,7 +281,7 @@ class App extends React.Component {
           page: this.state.page - 1
         }, () => {
           this.loadData();
-          console.log(this.state.page);
+          //console.log(this.state.page);
     });      
     }         
   }
@@ -280,8 +292,8 @@ class App extends React.Component {
         page: this.state.page + 1
       }, () => {
         this.loadData();
-        console.log(this.state.page);
-        console.log(this.state.data.message.total_task_count);
+        //console.log(this.state.page);
+        //console.log(this.state.data.message.total_task_count);
     });
     }        
   }
@@ -383,7 +395,7 @@ render(){
             </form>            
       	  </div>  
 
-          <div className="alerts" id="alert1" ref="divRef"></div> 
+          <div className="alerts" id="alert1"></div> 
 
           <table className="table table-striped">
             <thead className="thead-dark tableHead">
@@ -436,6 +448,8 @@ render(){
             </div>
           </div>
           <br />
+
+          <div className="alertsNewTask" id="alert2"></div>
 
           <form id="formId" className="form-group" onSubmit={this.addData}>
             <div className="form-group row">
